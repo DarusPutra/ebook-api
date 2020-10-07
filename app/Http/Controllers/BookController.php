@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+
 use App\Book;
+use JWTAuth;
 
 class BookController extends Controller
 {
@@ -14,18 +16,12 @@ class BookController extends Controller
      */
     public function index()
     {
-        //native select * from books;
+        //native :select * from books;
         return Book::get();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+    public function __construct() {
+        $this->middleware('auth:api');
     }
 
     /**
@@ -36,13 +32,14 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        //native:insert into blabla
+        //
+        //native :insert into blabla
         return Book::create([
-            "title" => $request->input('title'),
-            "description" => $request->input('description'),
-            "author" => $request->input('author'),
-            "publisher" => $request->input('publisher'),
-            "date_of_issue" => $request->input('date_of_issue'),
+            "title" => $request->title,
+            "description" => $request->description,
+            "author" => $request->author,
+            "publisher" => $request->publisher,
+            "date_of_issue" => $request->date_of_issue,
         ]);
     }
 
@@ -55,17 +52,7 @@ class BookController extends Controller
     public function show($id)
     {
         //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        return Book::find($id);
     }
 
     /**
@@ -79,11 +66,11 @@ class BookController extends Controller
     {
         //
         return Book::find($id)->update([
-            "title" => $request->input ('title'),
-            "description" => $request->input ('description'),
-            "author" => $request->input ('author'),
-            "publisher" => $request->input ('publisher'),
-            "date_of_issue" => $request->input ('date_of_issue'),
+            "title" => $request->title,
+            "description" => $request->description,
+            "author" => $request->author,
+            "publisher" => $request->publisher,
+            "date_of_issue" => $request->date_of_issue,
         ]);
     }
 
@@ -96,5 +83,6 @@ class BookController extends Controller
     public function destroy($id)
     {
         //
+        return Book::destroy($id);
     }
 }
