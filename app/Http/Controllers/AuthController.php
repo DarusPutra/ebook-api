@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Http\Request;
 use Validator;
 use App\User;
@@ -11,108 +11,163 @@ use App\User;
 class AuthController extends Controller {
 
     /**
-     * Create a new AuthController instance.
+     * Display a listing of the resource.
      *
-     * @return void
+     * @return \Illuminate\Http\Response
      */
-    public function __construct() {
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
-    }
-
-    /**
-     * Get a JWT via given credentials.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function login(Request $request){
-    	$validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required|string|min:6',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+    public function index()
+    {
+        //
+        return Author::get();
+        $author = Author::all();
+        if($author && $author->count() > 0){
+            return response(["message" => "Show data success", "data" => $author], 200);
+        }else{
+            return response(["message" => "Data not found", "data" => null], 404);
         }
-
-        if (! $token = auth()->attempt($validator->validated())) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
-        return $this->createNewToken($token);
     }
 
     /**
-     * Register a User.
+     * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\Response
      */
-    public function register(Request $request) {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|between:2,100',
-            'email' => 'required|string|email|max:100|unique:users',
-            'password' => 'required|string|confirmed|min:6',
-        ]);
-
-        if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-
-        $user = User::create(array_merge(
-                    $validator->validated(),
-                    ['password' => bcrypt($request->password)]
-                ));
-
-        return response()->json([
-            'message' => 'User successfully registered',
-            'user' => $user
-        ], 201);
+    public function create()
+    {
+        //
     }
-
-
     /**
-     * Log the user out (Invalidate the token).
+     * Store a newly created resource in storage.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
-    public function logout() {
-        auth()->logout();
-
-        return response()->json(['message' => 'User successfully signed out']);
-    }
-
-    /**
-     * Refresh a token.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function refresh() {
-        return $this->createNewToken(auth()->refresh());
-    }
-
-    /**
-     * Get the authenticated User.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function userProfile() {
-        return response()->json(auth()->user());
-    }
-
-    /**
-     * Get the token array structure.
-     *
-     * @param  string $token
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    protected function createNewToken($token){
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60,
-            'user' => auth()->user()
+    public function store(Request $request)
+    {
+        //'name', 'date_of_birth', 'place_of_birth', 'gender', 'email', 'hp'
+        return Author::create([
+            "name" => $request->name,
+            "date_of_birth" => $request->date_of_birth,
+            "place_of_birth" => $request->place_of_birth,
+            "gender" => $request->gender,
+            "email" => $request->email,
+            "hp" => $request->hp,
         ]);
     }
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        //
+        return Author::find($id);
+        $author = Author::all();
+        if($author && $author->count() > 0){
+            return response(["message" => "Show data success", "data" => $author], 200);
+        }else{
+            return response(["message" => "Data not found", "data" => null], 404);
+        }
+    }
 
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        //
+        return Author::find($id)->update([
+            "name" => $request->name,
+            "date_of_birth" => $request->date_of_birth,
+            "place_of_birth" => $request->place_of_birth,
+            "gender" => $request->gender,
+            "email" => $request->email,
+            "hp" => $request->hp,
+        ]);
+        // return Author::find($id)->update([
+        //     "name" => $request->name,
+        //     "date_of_birth" => $request->date_of_birth,
+        //     "place_of_birth" => $request->place_of_birth,
+        //     "gender" => $request->gender,
+        //     "email" => $request->email,
+        //     "hp" => $request->hp,
+        // ]);
+
+        try{
+
+            $name = $request->input('name');
+            $date_of_birth = $request->input('date_of_birth');
+            $place_of_birth = $request->input('place_of_birth');
+            $gender = $request->input('gender');
+            $email = $request->input('email');
+            $hp = $request->input('hp');
+
+
+            $data = \App\Author::where('id',$id)->first();
+            $data->name = $name;
+            $data->date_of_birth = $date_of_birth;
+            $data->place_of_birth = $place_of_birth;
+            $data->gender = $gender;
+            $data->email = $email;
+            $data->hp = $hp;
+
+            if($data->save()){
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Buku Berhasil di Update',
+                ]);
+            }
+        } catch (\Exception $e) {
+            // DB::rollBack();
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        //
+        return Author::destroy($id);
+        try{
+            $data = \App\Author::where('id',$id)->first();
+            if($data->delete()){
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Berhasil Delete Buku',
+                ]);
+            }
+        } catch (\Exception $e) {
+            // DB::rollBack();
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
 }
 

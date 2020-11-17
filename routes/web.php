@@ -1,7 +1,5 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -12,9 +10,25 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
 Route::get('/', function () {
-    return "XII RPL 2";
+    return 'XII RPL 2';
 });
 
-Route::get('/me','AuthController@me');
+Route::get('/me', 'AuthController@me'); 
+Route::get('/me', 'AuthController@me');
+
+Route::get('/books', 'BookController@index');
+
+
+Route::post('/books/create', 'BookController@store');
+
+
+Route::post('/books/update/{id}', 'BookController@update');
+
+Route::delete('/books/delete/{id}', 'BookController@destroy');
+
+Route::get('/kontrol', function () {
+    return "latihan control";
+});
+
+Route::resource('authors', 'AuthorController');
